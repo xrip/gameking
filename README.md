@@ -22,4 +22,5 @@ X - B button
 # Credits
 
 Based on great documentation by [Kevtris](http://blog.kevtris.org/blogfiles/Game%20King%20Inside.txt). 
+
 Using awesome M65(C)02 emulator by Mike Chambers & Jonathan Foucher.
