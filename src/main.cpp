@@ -436,11 +436,7 @@ extern "C" uint8_t read6502(uint16_t address) {
 
 extern "C" void write6502(uint16_t address, uint8_t value) {
     if (address <= 0x007F) {
-        write_register(address, value);
-        return;
-    }
-    if (address >= 0x0200 && address <= 0x03FF && value > 0) {
-        //printf("LCD 0x%04x 0x%02x \n", address, value);
+        return write_register(address, value);
     }
 
     if (address <= 0x27FF) {
@@ -497,14 +493,10 @@ int main(int argc, char **argv) {
     reset6502();
 
     for (;;) {
-        irq6502(TIMER0_INTERRUPT);
         exec6502(65535);
-        irq6502(TIMER1_INTERRUPT); // VBLANK
-//        exec6502(32768);
+        irq6502(TIMER1_INTERRUPT); // VBLANK?
+        irq6502(TIMER0_INTERRUPT);
 
-
-//        irq6502(TIMER0_INTERRUPT);
-//        irq6502(SQUARE2_TIMER_INTERRUPT);
 
         uint16_t offset =  *((uint16_t * )&RAM[0x40]);
         for (int y = 31, i = 0; i < 32; i++, y--) {
