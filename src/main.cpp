@@ -497,15 +497,23 @@ int main(int argc, char **argv) {
         irq6502(TIMER1_INTERRUPT); // VBLANK?
         irq6502(TIMER0_INTERRUPT);
 
+        // All games set it 0x200
+        // uint16_t offset =  *((uint16_t * )&RAM[0x40]);
+        // The LCD is drawn bottom-up, left to right.
+        for (int screen_y = 31, vram_y = 0; vram_y < 32; vram_y++, screen_y--) {
+            uint8_t *lcd_ram = &RAM[0x200 + vram_y * 12];
+            uint16_t *screen_line = &SCREEN[screen_y][0];
 
-        uint16_t offset =  *((uint16_t * )&RAM[0x40]);
-        for (int y = 31, i = 0; i < 32; i++, y--) {
-            for (int x = 0, j = offset; j < offset+48 / 4; x += 4, j++) {
-                uint8_t data = RAM[j + i * 12];
-                SCREEN[y][x + 3] = gameking_palette[data & 3];
-                SCREEN[y][x + 2] = gameking_palette[(data >> 2) & 3];
-                SCREEN[y][x + 1] = gameking_palette[(data >> 4) & 3];
-                SCREEN[y][x + 0] = gameking_palette[(data >> 6) & 3];
+            for (int x = 4; x < 52; x += 8) {
+                uint8_t pixels = *lcd_ram++;
+
+                screen_line[--x] = gameking_palette[pixels & 3];
+                pixels >>= 2;
+                screen_line[--x] = gameking_palette[pixels & 3];
+                pixels >>= 2;
+                screen_line[--x] = gameking_palette[pixels & 3];
+                pixels >>= 2;
+                screen_line[--x] = gameking_palette[pixels & 3];
             }
         }
 
